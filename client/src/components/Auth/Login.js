@@ -4,6 +4,9 @@ import { GoogleLogin } from 'react-google-login';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 
+
+import { default as keysConfig } from '../../keys.config';
+
 import Context from '../../context';
 import { logInUser, isLoggedIn } from '../../context/actions';
 import { meQuery } from '../../graphql/queries';
@@ -45,7 +48,7 @@ const Login = ({ classes }) => {
         Welcome
       </Typography>
       <GoogleLogin
-        clientId='17846108568-h45esd9trs7ko8l0bi2m4cdqqgklqrs7.apps.googleusercontent.com'
+        clientId={keysConfig.OAuthClientId}
         onSuccess={onSuccess}
         onFailure={onFailure}
         theme='dark'
