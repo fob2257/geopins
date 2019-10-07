@@ -8,13 +8,15 @@ import Splash from './pages/Splash';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import * as serviceWorker from './serviceWorker';
 
-import { ContextProvider } from './context'
+import { ContextProvider } from './context';
+
+import ProtectedRoute from './components/common/ProtectedRoute';
 
 const Root = () => (
   <ContextProvider>
     <Router>
       <Switch>
-        <Route exact path='/' component={App} />
+        <ProtectedRoute exact path='/' component={App} />
         <Route path='/login' component={Splash} />
       </Switch>
     </Router>
