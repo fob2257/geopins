@@ -1,12 +1,15 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { GraphQLClient } from 'graphql-request';
 import { GoogleLogin } from 'react-google-login';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 
+import Context from '../../context';
+import { logInUser } from '../../context/actions';
 import { meQuery } from '../../graphql/queries';
 
 const Login = ({ classes }) => {
+  const { dispatch } = useContext(Context);
 
   const onSuccess = async googleUser => {
     const { id_token: idToken } = googleUser.getAuthResponse();
@@ -15,9 +18,9 @@ const Login = ({ classes }) => {
       headers: { authorization: idToken },
     });
 
-    const response = await client.request(meQuery);
+    const { me } = await client.request(meQuery);
 
-    console.log(response);
+    dispatch(logInUser(me));
   };
 
   return (

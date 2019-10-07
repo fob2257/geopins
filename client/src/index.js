@@ -8,16 +8,18 @@ import Splash from './pages/Splash';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import * as serviceWorker from './serviceWorker';
 
-const Root = () => {
-  return (
+import { ContextProvider } from './context'
+
+const Root = () => (
+  <ContextProvider>
     <Router>
       <Switch>
         <Route exact path='/' component={App} />
         <Route path='/login' component={Splash} />
       </Switch>
     </Router>
-  );
-};
+  </ContextProvider>
+);
 
 ReactDOM.render(<Root />, document.getElementById('root'));
 
