@@ -20,6 +20,8 @@ import {
 
 import { createPinMutation } from '../../graphql/mutations';
 
+import { useClient } from '../../useClient';
+
 const CreatePin = ({ classes }) => {
   const { state, dispatch } = useContext(Context);
 
@@ -27,6 +29,8 @@ const CreatePin = ({ classes }) => {
   const [image, setImage] = useState(null);
   const [content, setContent] = useState('');
   const [submitting, setSubmitting] = useState(false);
+
+  const client = useClient();
 
   const handleDeleteDraft = () => {
     setTitle('');
@@ -56,16 +60,7 @@ const CreatePin = ({ classes }) => {
       setSubmitting(true);
       const url = await handleImageUpload();
 
-      const { id_token: idToken } = window.gapi.auth2
-        .getAuthInstance()
-        .currentUser.get()
-        .getAuthResponse();
-
       const { draft: { latitude, longitude } } = state;
-
-      const client = new GraphQLClient('http://localhost:4000/graphql', {
-        headers: { authorization: idToken },
-      });
 
       const { createPin } = await client.request(createPinMutation, {
         title,

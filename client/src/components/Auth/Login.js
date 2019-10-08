@@ -9,7 +9,10 @@ import { default as keysConfig } from '../../keys.config';
 
 import Context from '../../context';
 import { logInUser, isLoggedIn } from '../../context/actions';
+
 import { meQuery } from '../../graphql/queries';
+
+import { baseUrl } from '../../useClient';
 
 const Login = ({ classes }) => {
   const { dispatch } = useContext(Context);
@@ -18,7 +21,7 @@ const Login = ({ classes }) => {
     try {
       const { id_token: idToken } = googleUser.getAuthResponse();
 
-      const client = new GraphQLClient('http://localhost:4000/graphql', {
+      const client = new GraphQLClient(baseUrl, {
         headers: { authorization: idToken },
       });
 
