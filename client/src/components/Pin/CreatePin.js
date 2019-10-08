@@ -9,6 +9,7 @@ import LandscapeIcon from '@material-ui/icons/LandscapeOutlined';
 import ClearIcon from '@material-ui/icons/Clear';
 import SaveIcon from '@material-ui/icons/SaveTwoTone';
 import axios from 'axios';
+import { unstable_useMediaQuery as useMediaQuery } from '@material-ui/core/useMediaQuery';
 
 import { default as keysConfig } from '../../keys.config';
 
@@ -24,6 +25,7 @@ import { useClient } from '../../useClient';
 
 const CreatePin = ({ classes }) => {
   const { state, dispatch } = useContext(Context);
+  const mobileSize = useMediaQuery('(max-width: 650px)');
 
   const [title, setTitle] = useState('');
   const [image, setImage] = useState(null);
@@ -120,7 +122,7 @@ const CreatePin = ({ classes }) => {
           name='content'
           label='Content'
           multiline
-          rows='6'
+          rows={mobileSize ? '3' : '6'}
           margin='normal'
           fullWidth
           variant='outlined'
