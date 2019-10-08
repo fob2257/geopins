@@ -5,6 +5,7 @@ import differenceInMinutes from 'date-fns/difference_in_minutes';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import DeleteIcon from '@material-ui/icons/DeleteTwoTone';
+import { Subscription } from 'react-apollo';
 
 import { default as keysConfig } from '../keys.config';
 
@@ -15,11 +16,18 @@ import {
   setPins,
   setCurrentPin,
   deletePin,
+  addPin,
+  createComment,
 } from '../context/actions';
 
 import { useClient } from '../useClient';
 import { getPinsQuery } from '../graphql/queries';
 import { deletePinMutation } from '../graphql/mutations';
+import {
+  pinAddedSubscription,
+  pinDeletedSubscription,
+  pinUpdatedSubscription,
+} from '../graphql/subscriptions';
 
 import PinIcon from './PinIcon';
 import Blog from './Blog';
@@ -91,7 +99,7 @@ const Map = ({ classes }) => {
   const handlePinDelete = async (pinId) => {
     const { deletePin: pin } = await client.request(deletePinMutation, { pinId });
 
-    dispatch(deletePin(pin));
+    // dispatch(deletePin(pin));
     setPopup(null);
   };
 
@@ -196,6 +204,43 @@ const Map = ({ classes }) => {
           )
         }
       </ReactMapGL>
+      {/* Apollo subscriptions */}
+      <Subscription
+        subscription={pinAddedSubscription}
+        onSubscriptionData={({
+          subscriptionData: {
+            data: { pinAdded: pin },
+          },
+        }) => {
+          // console.log({ pin });
+
+          dispatch(addPin(pin));
+        }}
+      />
+      <Subscription
+        subscription={pinUpdatedSubscription}
+        onSubscriptionData={({
+          subscriptionData: {
+            data: { pinUpdated: pin },
+          },
+        }) => {
+          // console.log({ pin });
+
+          dispatch(createComment(pin));
+        }}
+      />
+      <Subscription
+        subscription={pinDeletedSubscription}
+        onSubscriptionData={({
+          subscriptionData: {
+            data: { pinDeleted: pin },
+          },
+        }) => {
+          // console.log({ pin });
+
+          dispatch(deletePin(pin));
+        }}
+      />
       <Blog />
     </div>
   );

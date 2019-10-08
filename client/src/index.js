@@ -9,18 +9,21 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import * as serviceWorker from './serviceWorker';
 
 import { ContextProvider } from './context';
+import ApolloProvider from './graphql/apollo';
 
 import ProtectedRoute from './components/common/ProtectedRoute';
 
 const Root = () => (
-  <ContextProvider>
-    <Router>
-      <Switch>
-        <ProtectedRoute exact path='/' component={App} />
-        <Route path='/login' component={Splash} />
-      </Switch>
-    </Router>
-  </ContextProvider>
+  <ApolloProvider>
+    <ContextProvider>
+      <Router>
+        <Switch>
+          <ProtectedRoute exact path='/' component={App} />
+          <Route path='/login' component={Splash} />
+        </Switch>
+      </Router>
+    </ContextProvider>
+  </ApolloProvider>
 );
 
 ReactDOM.render(<Root />, document.getElementById('root'));

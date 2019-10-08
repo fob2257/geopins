@@ -22,7 +22,7 @@ const CreateComment = ({ classes }) => {
 
     const { createComment: payload } = await client.request(createCommentMutation, { pinId, text: comment });
 
-    dispatch(createComment(payload));
+    // dispatch(createComment(payload));
     setComment('');
   };
 

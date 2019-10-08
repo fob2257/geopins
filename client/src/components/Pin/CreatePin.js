@@ -71,7 +71,7 @@ const CreatePin = ({ classes }) => {
       });
       // console.log(pin);
 
-      dispatch(addPin(pin));
+      // dispatch(addPin(pin));
       handleDeleteDraft();
     } catch (error) {
       setSubmitting(false);
