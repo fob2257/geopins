@@ -1,4 +1,5 @@
 import React, { useState, useContext } from 'react';
+import { GraphQLClient } from 'graphql-request';
 import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
@@ -16,6 +17,8 @@ import {
   deleteDraft,
   addPin,
 } from '../../context/actions';
+
+import { createPinMutation } from '../../graphql/mutations';
 
 const CreatePin = ({ classes }) => {
   const { state, dispatch } = useContext(Context);
@@ -48,25 +51,38 @@ const CreatePin = ({ classes }) => {
   };
 
   const handleSubmit = async (event) => {
-    event.preventDefault();
-    setSubmitting(true);
-
     try {
+      event.preventDefault();
+      setSubmitting(true);
       const url = await handleImageUpload();
 
-      console.log(url);
+      const { id_token: idToken } = window.gapi.auth2
+        .getAuthInstance()
+        .currentUser.get()
+        .getAuthResponse();
 
-      // const { draft: { latitude, longitude } } = state;
+      const { draft: { latitude, longitude } } = state;
 
-      // const pin = null;
+      const client = new GraphQLClient('http://localhost:4000/graphql', {
+        headers: { authorization: idToken },
+      });
+
+      const { createPin } = await client.request(createPinMutation, {
+        title,
+        image: url,
+        content,
+        latitude,
+        longitude,
+      });
+
+      console.log(createPin);
 
       // dispatch(addPin(pin));
       handleDeleteDraft();
     } catch (error) {
+      setSubmitting(false);
       console.error(error);
     }
-
-    setSubmitting(false);
   };
 
   return (
