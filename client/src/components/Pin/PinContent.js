@@ -7,6 +7,9 @@ import dateFormat from 'date-fns/format';
 
 import Context from '../../context';
 
+import CreateComment from '../Comment/CreateComment';
+import Comments from '../Comment/Comments';
+
 const PinContent = ({ classes }) => {
   const {
     state: {
@@ -58,6 +61,8 @@ const PinContent = ({ classes }) => {
       >
         {content}
       </Typography>
+      <CreateComment />
+      <Comments comments={comments} />
     </div>
   );
 };

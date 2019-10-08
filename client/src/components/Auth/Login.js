@@ -4,7 +4,6 @@ import { GoogleLogin } from 'react-google-login';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 
-
 import { default as keysConfig } from '../../keys.config';
 
 import Context from '../../context';

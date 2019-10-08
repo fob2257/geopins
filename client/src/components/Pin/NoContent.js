@@ -14,7 +14,7 @@ const NoContent = ({ classes }) => (
       gutterBottom
       noWrap
     >
-      Click on the map tp add a pin
+      Click on the map to add a pin
     </Typography>
   </div>
 );
