@@ -62,17 +62,16 @@ const CreatePin = ({ classes }) => {
 
       const { draft: { latitude, longitude } } = state;
 
-      const { createPin } = await client.request(createPinMutation, {
+      const { createPin: pin } = await client.request(createPinMutation, {
         title,
         image: url,
         content,
         latitude,
         longitude,
       });
+      // console.log(pin);
 
-      console.log(createPin);
-
-      // dispatch(addPin(pin));
+      dispatch(addPin(pin));
       handleDeleteDraft();
     } catch (error) {
       setSubmitting(false);

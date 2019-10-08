@@ -6,11 +6,20 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import DeleteIcon from '@material-ui/icons/DeleteTwoTone';
 
+import { default as keysConfig } from '../keys.config';
+
 import Context from '../context';
 import {
   createDraft,
   updateDraft,
+  setPins,
+  setCurrentPin,
+  deletePin,
 } from '../context/actions';
+
+import { useClient } from '../useClient';
+import { getPinsQuery } from '../graphql/queries';
+import { deletePinMutation } from '../graphql/mutations';
 
 import PinIcon from './PinIcon';
 import Blog from './Blog';
@@ -28,6 +37,8 @@ const Map = ({ classes }) => {
   const [userPosition, setUserPosition] = useState(null);
   const [popup, setPopup] = useState(null);
 
+  const client = useClient();
+
   const getUserPosition = () => {
     if ('geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(({ coords: { latitude, longitude } }) => {
@@ -37,8 +48,16 @@ const Map = ({ classes }) => {
     }
   };
 
+  const getPins = async () => {
+    const { getPins: pins } = await client.request(getPinsQuery);
+    // console.log(pins);
+    dispatch(setPins(pins));
+  };
+
   useEffect(() => {
     getUserPosition();
+
+    getPins();
   }, []);
 
   const handleMapOnClick = (event) => {
@@ -53,13 +72,36 @@ const Map = ({ classes }) => {
     dispatch(updateDraft({ latitude, longitude }));
   };
 
+  const highlightNewPin = pin =>
+    differenceInMinutes(Date.now(), Number.parseInt(pin.createdAt)) <= 30 ? 'limegreen'
+      : 'darkblue';
+
+  const handlePinSelect = (pin) => {
+    setPopup(pin);
+    dispatch(setCurrentPin(pin));
+  };
+
+  const isAuthUser = () => state.currentUser._id === popup.author._id;
+
+  const handlePopupClose = () => {
+    setPopup(null)
+    dispatch(setCurrentPin(null));
+  };
+
+  const handlePinDelete = async (pinId) => {
+    const { deletePin: pin } = await client.request(deletePinMutation, { pinId });
+
+    dispatch(deletePin(pin));
+    setPopup(null);
+  };
+
   return (
     <div className={classes.root}>
       <ReactMapGL
         width='100vw'
         height='calc(100vh - 64px)'
         mapStyle='mapbox://styles/mapbox/streets-v9'
-        mapboxApiAccessToken='pk.eyJ1IjoiZm9iMjI1NyIsImEiOiJjanp5ZXBoNG8wMXBsM21wMnJidTZzemxoIn0.JXPHSnYq9fnEsaMVCkAO-A'
+        mapboxApiAccessToken={keysConfig.MapboxAccessKey}
         onViewportChange={newViewPort => setViewPort(newViewPort)}
         onClick={handleMapOnClick}
         {...viewPort}
@@ -99,6 +141,58 @@ const Map = ({ classes }) => {
                 color='hotpink'
               />
             </Marker>
+          )
+        }
+        {
+          // created pins
+          state.pins.map(pin => (
+            <Marker
+              key={pin._id}
+              latitude={pin.latitude}
+              longitude={pin.longitude}
+              offsetLeft={-19}
+              offsetTop={-37}
+            >
+              <PinIcon
+                size={40}
+                color={highlightNewPin(pin)}
+                onClick={() => handlePinSelect(pin)}
+              />
+            </Marker>
+          ))
+        }
+        {
+          // popup dialog for created pins
+          popup && (
+            <Popup
+              anchor='top'
+              latitude={popup.latitude}
+              longitude={popup.longitude}
+              closeOnClick={false}
+              onClose={() => handlePopupClose()}
+            >
+              <img
+                className={classes.popupImage}
+                src={popup.image}
+                alt={popup.title}
+              />
+              <div className={classes.popupTab}>
+                <Typography>
+                  {popup.latitude.toFixed(6)}, {popup.longitude.toFixed(6)}
+                </Typography>
+                {
+                  isAuthUser() && (
+                    <Button
+                      onClick={() => handlePinDelete(popup._id)}
+                    >
+                      <DeleteIcon
+                        className={classes.deleteIcon}
+                      />
+                    </Button>
+                  )
+                }
+              </div>
+            </Popup>
           )
         }
       </ReactMapGL>
