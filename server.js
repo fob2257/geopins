@@ -35,6 +35,8 @@ const server = new ApolloServer({
   typeDefs,
   resolvers,
   context,
+  introspection: true,
+  playground: true,
 });
 
 server.listen({ port }).then(({ url }) => console.log(`Server listening on ${url}`));
